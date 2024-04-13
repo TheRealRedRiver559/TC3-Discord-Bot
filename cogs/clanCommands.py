@@ -321,7 +321,6 @@ class ClanCommands(commands.Cog):
         member: discord.Member
     ):
         async with self.bot.pool.acquire() as connection:
-            # Select data from the ClanPointTracker table
             sql = "SELECT * FROM ClanPointTracker WHERE discordUserID = $1"
             member_clan_point_data = await connection.fetch(sql, member.id)
 
@@ -360,20 +359,18 @@ class ClanCommands(commands.Cog):
                 leader_real_name = leader.name
                 leader_entry = "{:<20} User: {:>4}".format(f'• {leader_nick}', leader_real_name)
 
-            # Creating entry for co-leader
             if co_leader:
                 co_leader_nick = co_leader.display_name
                 co_leader_real_name = co_leader.name
                 co_leader_entry = "{:<20} User: {:>4}".format(f'• {co_leader_nick}', co_leader_real_name)
 
-            # Creating entries for members
             members = []
             for member in clan_members:
                 member_nick = member.display_name
                 member_real_name = member.name
                 members.append((member_nick, member_real_name))
 
-            # Sorting members by real name
+
             members.sort(key=lambda x: x[1])
             for i, (member_nick, member_real_name) in enumerate(members):
                 member_text += "{:<20} User: {:>4}\n".format(f'{i+1} {member_nick}', member_real_name)
@@ -427,8 +424,7 @@ class ClanCommands(commands.Cog):
                     sql = "SELECT points FROM ClanPointTracker WHERE discordUserID = $1"
                     points = await connection.fetchval(sql, member.id) or 0
                     members.append((member.display_name, points))
-
-                #Sort members by points.
+                    
                 members.sort(key=lambda x: x[1], reverse=True)
                 for i, (member, points) in enumerate(members):
                     member_text += "{:<20} Points: {:>4}\n".format(f'{i+1} {member}', points)

@@ -352,18 +352,20 @@ class ClanCommands(commands.Cog):
         if clan_role in clan_list:
             clan_info_list = generate_clan_roster_obj.get_clan_info(interaction=interaction, clan_role=clan_role)
 
-            leader, co_leader, clan_members = clan_info_list[0], clan_info_list[1], clan_info_list[2]
+            leader, co_leaders, clan_members = clan_info_list[0], clan_info_list[1], clan_info_list[2]
             member_text = ""
+            co_leader_text = ""
 
             if leader:
                 leader_nick = leader.display_name
                 leader_real_name = leader.name
                 leader_entry = "{:<20} Real Name: {:>4}".format(f'• {leader_nick}', leader_real_name)
 
-            if co_leader:
-                co_leader_nick = co_leader.display_name
-                co_leader_real_name = co_leader.name
-                co_leader_entry = "{:<20} Real Name: {:>4}".format(f'• {co_leader_nick}', co_leader_real_name)
+            if co_leaders:
+                for co_leader in co_leaders:
+                    co_leader_nick = co_leader.display_name
+                    co_leader_real_name = co_leader.name
+                    co_leader_text += "{:<20} Real Name: {:>4}\n".format(f'• {co_leader_nick}', co_leader_real_name)
 
             members = []
             for member in clan_members:
@@ -376,7 +378,7 @@ class ClanCommands(commands.Cog):
                 member_text += "{:<20} Real Name: {:>4}\n".format(f'{i+1} {member_nick}', member_real_name)
 
             total_members = len(members)
-            embed_text = f"```Leader:\n{leader_entry}\n\nCo-Leader:\n{co_leader_entry}\n\nMembers:\n{member_text}Total Members:\n• {total_members}/10```"
+            embed_text = f"```Leader:\n{leader_entry}\n\nCo-Leaders:\n{co_leader_text}\nMembers:\n{member_text}Total Members:\n• {total_members}/10```"
             clan_roster_embed = discord.Embed(
                 title=f"{clan_role.name}'s Roster:",
                 description=embed_text,
@@ -392,6 +394,7 @@ class ClanCommands(commands.Cog):
                 color=0x2f3136
             )
             await interaction.response.send_message(embed=response_embed)
+
 
     
     @app_commands.describe(clan_role="Select the clan role to view points.")
